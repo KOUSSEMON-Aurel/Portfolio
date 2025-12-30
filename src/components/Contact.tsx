@@ -1,7 +1,6 @@
 import { motion } from 'motion/react';
 import { Mail, MessageSquare, Send } from 'lucide-react';
 import { useState, useCallback } from 'react';
-import { MessageHistory } from './MessageHistory';
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -252,9 +251,6 @@ export function Contact() {
               )}
             </motion.form>
           </div>
-
-          {/* Historique des messages */}
-          <MessageHistory />
           
           <div className="mt-20 pt-10 border-t border-theme-accent/20 text-center">
             <p className="text-theme-secondary font-mono text-sm">
