@@ -69,7 +69,9 @@ export function Navigation({ activeSection }: NavigationProps) {
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1, duration: 0.3 }}
-                  className={`relative px-4 py-2 font-mono text-sm rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 ${
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`relative px-4 py-2 font-mono text-sm rounded-lg transition-all duration-200 ease-out ${
                     activeSection === link.id 
                       ? 'text-theme-accent bg-theme-accent-bg' 
                       : 'text-theme-secondary hover:text-theme-accent hover:bg-theme-hover'
@@ -80,7 +82,7 @@ export function Navigation({ activeSection }: NavigationProps) {
                     <motion.div
                       layoutId="activeSection"
                       className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                     />
                   )}
                 </motion.button>
