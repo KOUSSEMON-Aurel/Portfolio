@@ -11,7 +11,7 @@ export function Hero() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative px-4">
-      <div className="max-w-6xl w-full flex flex-col-reverse md:grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+      <div className="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -81,7 +81,7 @@ export function Hero() {
         </motion.div>
         
         {/* Terminal Animation */}
-        <div className="w-full md:w-auto">
+        <div className="block mt-8 md:mt-0">
           <TerminalAnimation />
         </div>
       </div>
