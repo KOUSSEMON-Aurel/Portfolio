@@ -45,7 +45,7 @@ export function Navigation({ activeSection }: NavigationProps) {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <motion.div 
-              className="flex items-center gap-2 cursor-pointer"
+              className="flex items-center gap-1 cursor-pointer flex-shrink-0"
               whileHover={{ scale: 1.05 }}
               onClick={() => scrollTo('home')}
             >
@@ -53,9 +53,9 @@ export function Navigation({ activeSection }: NavigationProps) {
                 animate={{ rotate: 360 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
               >
-                <Terminal className="w-6 h-6 text-gradient-primary" />
+                <Terminal className="w-5 h-5 sm:w-6 sm:h-6 text-gradient-primary" />
               </motion.div>
-              <span className="font-mono text-theme-accent font-bold text-sm sm:text-base">
+              <span className="font-mono text-theme-accent font-bold text-xs sm:text-sm md:text-base whitespace-nowrap">
                 root@portfolio<span className="text-theme-primary">:~$</span>
               </span>
             </motion.div>
