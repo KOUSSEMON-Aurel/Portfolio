@@ -25,24 +25,7 @@ export function Contact() {
         date: new Date().toISOString(),
       };
 
-      // 1️⃣ Envoyer à FormSubmit (email automatique)
-      const formDataObj = new FormData();
-      formDataObj.append('name', formData.name);
-      formDataObj.append('email', formData.email);
-      formDataObj.append('message', formData.message);
-      formDataObj.append('_captcha', 'false'); // Désactiver captcha pour simplicité
-      formDataObj.append('_next', window.location.origin + '#contact'); // Rester sur la page
-
-      const formSubmitResponse = await fetch('https://formsubmit.co/ajax/contact@alexdubois.dev', {
-        method: 'POST',
-        body: formDataObj
-      });
-
-      if (!formSubmitResponse.ok) {
-        throw new Error('Failed to send email');
-      }
-
-      // 2️⃣ Sauvegarder dans SheetDB pour l'historique
+      // 1️⃣ Sauvegarder dans SheetDB pour l'historique D'ABORD
       try {
         await fetch('https://sheetdb.io/api/v1/elidbjd3mdw5m', {
           method: 'POST',
@@ -52,14 +35,19 @@ export function Contact() {
           body: JSON.stringify({ data: [formDataToSend] })
         });
       } catch (sheetError) {
-        console.warn('SheetDB save failed, but email was sent:', sheetError);
+        console.warn('SheetDB save failed:', sheetError);
         // Ne pas échouer si SheetDB ne fonctionne pas
       }
+
+      // 2️⃣ Laisser le formulaire HTML s'occuper de FormSubmit
+      // L'attribut action="https://formsubmit.co/contact@alexdubois.dev" va gérer l'email
+      const form = e.currentTarget;
+      form.submit();
 
       setSubmitStatus('success');
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error processing form:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -122,6 +110,8 @@ export function Contact() {
             </div>
             
             <motion.form
+              action="https://formsubmit.co/contact@alexdubois.dev"
+              method="POST"
               onSubmit={handleSubmit}
               className="space-y-4"
               initial={{ opacity: 0, x: 20 }}
@@ -129,6 +119,10 @@ export function Contact() {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
+              {/* Champs cachés pour FormSubmit */}
+              <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="_next" value={window.location.origin + '#contact'} />
+
               {/* Honeypot anti-spam - champ invisible */}
               <input
                 type="text"
