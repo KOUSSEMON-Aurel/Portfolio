@@ -23,7 +23,14 @@ export function Navigation({ activeSection }: NavigationProps) {
 
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
-    element?.scrollIntoView({ behavior: 'smooth' });
+    if (element) {
+      const navHeight = 64; // h-16 = 4rem = 64px
+      const elementPosition = element.offsetTop - navHeight;
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      });
+    }
     setIsMenuOpen(false);
   };
 
@@ -48,7 +55,7 @@ export function Navigation({ activeSection }: NavigationProps) {
               >
                 <Terminal className="w-6 h-6 text-gradient-primary" />
               </motion.div>
-              <span className="font-mono text-theme-accent font-bold hidden sm:inline">
+              <span className="font-mono text-theme-accent font-bold text-sm sm:text-base">
                 root@portfolio<span className="text-theme-primary">:~$</span>
               </span>
             </motion.div>
