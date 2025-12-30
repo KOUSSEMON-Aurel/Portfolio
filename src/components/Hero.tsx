@@ -81,7 +81,7 @@ export function Hero() {
         </motion.div>
         
         {/* Terminal Animation */}
-        <div className="hidden md:block">
+        <div className="block mt-8 md:mt-0">
           <TerminalAnimation />
         </div>
       </div>
