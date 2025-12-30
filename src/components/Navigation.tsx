@@ -68,10 +68,8 @@ export function Navigation({ activeSection }: NavigationProps) {
                   onClick={() => scrollTo(link.id)}
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`relative px-4 py-2 font-mono text-sm rounded-lg transition-all ${
+                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                  className={`relative px-4 py-2 font-mono text-sm rounded-lg transition-all duration-200 ease-out transform hover:scale-105 active:scale-95 ${
                     activeSection === link.id 
                       ? 'text-theme-accent bg-theme-accent-bg' 
                       : 'text-theme-secondary hover:text-theme-accent hover:bg-theme-hover'
@@ -140,9 +138,8 @@ export function Navigation({ activeSection }: NavigationProps) {
                 onClick={() => scrollTo(link.id)}
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: isMenuOpen ? index * 0.05 : 0 }}
-                whileHover={{ x: 10 }}
-                className={`w-full text-left px-4 py-3 rounded-lg font-mono transition-all ${
+                transition={{ delay: isMenuOpen ? index * 0.05 : 0, duration: 0.3 }}
+                className={`w-full text-left px-4 py-3 rounded-lg font-mono transition-all duration-200 hover:translate-x-2 ${
                   activeSection === link.id
                     ? 'text-theme-accent bg-theme-accent-bg border-l-4 border-theme-accent'
                     : 'text-theme-secondary hover:text-theme-accent hover:bg-theme-hover border-l-4 border-transparent'
