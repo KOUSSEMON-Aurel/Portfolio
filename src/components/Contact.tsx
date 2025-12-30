@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { Mail, MessageSquare, Send } from 'lucide-react';
 import { useState } from 'react';
-import emailjs from '@emailjs/browser';
+import { MessageHistory } from './MessageHistory';
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -12,41 +12,54 @@ export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
     try {
-      // Configuration EmailJS avec variables d'environnement
-      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-      if (!serviceId || !templateId || !publicKey) {
-        throw new Error('EmailJS configuration missing. Please check your environment variables.');
-      }
-
-      const templateParams = {
-        from_name: formData.name,
-        from_email: formData.email,
+      const formDataToSend = {
+        name: formData.name,
+        email: formData.email,
         message: formData.message,
-        to_email: import.meta.env.VITE_CONTACT_EMAIL || 'contact@alexdubois.dev',
-        reply_to: formData.email
+        date: new Date().toISOString(),
       };
 
-      // Envoi avec EmailJS
-      await emailjs.send(
-        serviceId,
-        templateId,
-        templateParams,
-        publicKey
-      );
+      // 1️⃣ Envoyer à FormSubmit (email automatique)
+      const formDataObj = new FormData();
+      formDataObj.append('name', formData.name);
+      formDataObj.append('email', formData.email);
+      formDataObj.append('message', formData.message);
+      formDataObj.append('_captcha', 'false'); // Désactiver captcha pour simplicité
+      formDataObj.append('_next', window.location.origin + '#contact'); // Rester sur la page
+
+      const formSubmitResponse = await fetch('https://formsubmit.co/ajax/contact@alexdubois.dev', {
+        method: 'POST',
+        body: formDataObj
+      });
+
+      if (!formSubmitResponse.ok) {
+        throw new Error('Failed to send email');
+      }
+
+      // 2️⃣ Sauvegarder dans SheetDB pour l'historique
+      try {
+        await fetch('https://sheetdb.io/api/v1/elidbjd3mdw5m', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ data: [formDataToSend] })
+        });
+      } catch (sheetError) {
+        console.warn('SheetDB save failed, but email was sent:', sheetError);
+        // Ne pas échouer si SheetDB ne fonctionne pas
+      }
 
       setSubmitStatus('success');
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error sending message:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -116,6 +129,15 @@ export function Contact() {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
+              {/* Honeypot anti-spam - champ invisible */}
+              <input
+                type="text"
+                name="phone"
+                style={{ display: 'none' }}
+                autoComplete="off"
+                tabIndex={-1}
+              />
+
               <div>
                 <label htmlFor="name" className="block text-theme-accent font-mono text-sm mb-2">
                   $ echo $NAME
@@ -131,7 +153,7 @@ export function Contact() {
                   required
                 />
               </div>
-              
+
               <div>
                 <label htmlFor="email" className="block text-theme-accent font-mono text-sm mb-2">
                   $ echo $EMAIL
@@ -147,7 +169,7 @@ export function Contact() {
                   required
                 />
               </div>
-              
+
               <div>
                 <label htmlFor="message" className="block text-theme-accent font-mono text-sm mb-2">
                   $ cat message.txt
@@ -203,6 +225,9 @@ export function Contact() {
               )}
             </motion.form>
           </div>
+
+          {/* Historique des messages */}
+          <MessageHistory />
           
           <div className="mt-20 pt-10 border-t border-theme-accent/20 text-center">
             <p className="text-theme-secondary font-mono text-sm">
