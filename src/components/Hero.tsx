@@ -10,7 +10,7 @@ export function Hero() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative px-4">
+    <div className="min-h-screen flex items-center justify-center relative px-4 pt-16 md:pt-0">
       <div className="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
