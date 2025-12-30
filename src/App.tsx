@@ -50,23 +50,23 @@ export default function App() {
         
         <Navigation activeSection={activeSection} />
         
-        <main className="relative z-10">
-          <section id="home">
+        <main className="relative z-10 snap-y snap-mandatory overflow-y-auto h-screen">
+          <section id="home" className="snap-start snap-always min-h-screen">
             <Hero />
           </section>
-          <section id="about">
+          <section id="about" className="snap-start min-h-screen">
             <About />
           </section>
-          <section id="skills">
+          <section id="skills" className="snap-start min-h-screen overflow-y-auto">
             <Skills />
           </section>
-          <section id="writeups">
+          <section id="writeups" className="snap-start min-h-screen overflow-y-auto">
             <Writeups />
           </section>
-          <section id="projects">
+          <section id="projects" className="snap-start min-h-screen overflow-y-auto">
             <Projects />
           </section>
-          <section id="contact">
+          <section id="contact" className="snap-start snap-always min-h-screen">
             <Contact />
           </section>
         </main>
