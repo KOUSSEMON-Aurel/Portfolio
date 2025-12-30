@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { GitBranch, Shield, Rocket, Server, Lock, CheckCircle } from 'lucide-react';
+import { GitBranch, Shield, Server, Lock, CheckCircle } from 'lucide-react';
 
 export function DevSecOpsTimeline() {
   const stages = [
