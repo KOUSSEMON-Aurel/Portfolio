@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { Mail, MessageSquare, Send } from 'lucide-react';
 import { useState } from 'react';
+import emailjs from '@emailjs/browser';
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -8,11 +9,48 @@ export function Contact() {
     email: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add your form submission logic here
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      // Configuration EmailJS avec variables d'environnement
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error('EmailJS configuration missing. Please check your environment variables.');
+      }
+
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        message: formData.message,
+        to_email: import.meta.env.VITE_CONTACT_EMAIL || 'contact@alexdubois.dev',
+        reply_to: formData.email
+      };
+
+      // Envoi avec EmailJS
+      await emailjs.send(
+        serviceId,
+        templateId,
+        templateParams,
+        publicKey
+      );
+
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -128,11 +166,41 @@ export function Contact() {
               
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-theme-accent to-theme-accent-secondary hover:from-theme-accent-secondary hover:to-theme-accent text-theme-nav py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:shadow-[0_0_20px_rgba(8,145,178,0.5)] font-semibold"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-theme-accent to-theme-accent-secondary hover:from-theme-accent-secondary hover:to-theme-accent text-theme-nav py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:shadow-[0_0_20px_rgba(8,145,178,0.5)] font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send className="w-5 h-5" />
-                <span className="font-mono">Envoyer le message</span>
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-theme-nav border-t-transparent rounded-full animate-spin" />
+                    <span className="font-mono">Envoi en cours...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    <span className="font-mono">Envoyer le message</span>
+                  </>
+                )}
               </button>
+
+              {submitStatus === 'success' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-green-400 text-center font-mono text-sm"
+                >
+                  ✅ Message envoyé avec succès !
+                </motion.div>
+              )}
+
+              {submitStatus === 'error' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-400 text-center font-mono text-sm"
+                >
+                  ❌ Erreur lors de l'envoi. Réessayez ou contactez-moi directement.
+                </motion.div>
+              )}
             </motion.form>
           </div>
           
