@@ -1,12 +1,13 @@
 import { motion } from 'motion/react';
 import { Mail, MessageSquare, Send } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { MessageHistory } from './MessageHistory';
 
 export function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    subject: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,6 +22,7 @@ export function Contact() {
       const formDataToSend = {
         name: formData.name,
         email: formData.email,
+        subject: formData.subject,
         message: formData.message,
         date: new Date().toISOString(),
       };
@@ -45,7 +47,7 @@ export function Contact() {
       form.submit();
 
       setSubmitStatus('success');
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
       console.error('Error processing form:', error);
       setSubmitStatus('error');
@@ -54,12 +56,13 @@ export function Contact() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center py-20 px-4">
@@ -110,7 +113,7 @@ export function Contact() {
             </div>
             
             <motion.form
-              action="https://formsubmit.co/contact@alexdubois.dev"
+              action="https://formsubmit.co/el/fitegi"
               method="POST"
               onSubmit={handleSubmit}
               className="space-y-4"
@@ -160,6 +163,22 @@ export function Contact() {
                   onChange={handleChange}
                   className="w-full bg-theme-nav border border-theme-accent/30 rounded-lg px-4 py-3 text-theme-text focus:outline-none focus:border-theme-accent transition-colors font-mono"
                   placeholder="votre@email.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="subject" className="block text-theme-accent font-mono text-sm mb-2">
+                  $ echo $SUBJECT
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="w-full bg-theme-nav border border-theme-accent/30 rounded-lg px-4 py-3 text-theme-text focus:outline-none focus:border-theme-accent transition-colors font-mono"
+                  placeholder="Sujet du message"
                   required
                 />
               </div>
