@@ -41,10 +41,23 @@ export function Contact() {
         // Ne pas échouer si SheetDB ne fonctionne pas
       }
 
-      // 2️⃣ Laisser le formulaire HTML s'occuper de FormSubmit
-      // L'attribut action="https://formsubmit.co/contact@alexdubois.dev" va gérer l'email
-      const form = e.currentTarget;
-      form.submit();
+      // 2️⃣ Envoyer à FormSubmit via fetch (plus fiable avec React)
+      const formDataObj = new FormData();
+      formDataObj.append('name', formData.name);
+      formDataObj.append('email', formData.email);
+      formDataObj.append('subject', formData.subject);
+      formDataObj.append('message', formData.message);
+      formDataObj.append('_captcha', 'false');
+      formDataObj.append('_next', window.location.origin + '#contact');
+
+      const formSubmitResponse = await fetch('https://formsubmit.co/contact@alexdubois.dev', {
+        method: 'POST',
+        body: formDataObj
+      });
+
+      if (!formSubmitResponse.ok) {
+        throw new Error('Failed to send email');
+      }
 
       setSubmitStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
@@ -113,8 +126,6 @@ export function Contact() {
             </div>
             
             <motion.form
-              action="https://formsubmit.co/el/fitegi"
-              method="POST"
               onSubmit={handleSubmit}
               className="space-y-4"
               initial={{ opacity: 0, x: 20 }}
