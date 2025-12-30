@@ -127,7 +127,7 @@ export function Navigation({ activeSection }: NavigationProps) {
         <motion.div
           initial={false}
           animate={{ 
-            height: isMenuOpen ? 'auto' : 0,
+            maxHeight: isMenuOpen ? 500 : 0,
             opacity: isMenuOpen ? 1 : 0
           }}
           transition={{ duration: 0.3 }}
